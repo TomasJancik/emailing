@@ -78,9 +78,11 @@ class Mail implements iMail {
 	}
 	
 	if(is_string($to)) {
-	    $this->to[] = $to;
+	    $this->to[$to] = new MailRecipient($to);
 	} elseif(is_array($to)) {
-	    $this->to = array_merge($this->to, $to);
+	    foreach($to as $name => $email) {
+		$this->to[$email] = new MailRecipient($email, $name);
+	    }
 	} else {
 	    Throw new \InvalidArgumentException(__METHOD__ . ' only accepts string or array as $to parameter.');
 	}
@@ -92,9 +94,11 @@ class Mail implements iMail {
 	}
 	
 	if(is_string($cc)) {
-	    $this->cc[] = $cc;
+	    $this->cc[] = new MailRecipient($cc);
 	} elseif(is_array($cc)) {
-	    $this->cc = array_merge($this->cc, $cc);
+	    foreach($cc as $name => $email) {
+		$this->cc[$email] = new MailRecipient($email, $name);
+	    }
 	} else {
 	    Throw new \InvalidArgumentException(__METHOD__ . ' only accepts string or array as $to parameter.');
 	}
@@ -106,9 +110,11 @@ class Mail implements iMail {
 	}
 	
 	if(is_string($bcc)) {
-	    $this->bcc[] = $bcc;
+	    $this->bcc[] = new MailRecipient($bcc);
 	} elseif(is_array($bcc)) {
-	    $this->bcc = array_merge($this->bcc, $bcc);
+	    foreach($bcc as $name => $email) {
+		$this->bcc[$email] = new MailRecipient($email, $name);
+	    }
 	} else {
 	    Throw new \InvalidArgumentException(__METHOD__ . ' only accepts string or array as $to parameter.');
 	}
@@ -145,16 +151,16 @@ class Mail implements iMail {
 	
 	if(is_null($batch)) {
 	    // send to all recipients 
-	    foreach($this->to as $name => $mail) {
-		$message->addTo($mail, $name);
+	    foreach($this->to as $r) {
+		$message->addTo($r->getEmail(), $r->getName());
 	    }
 	    
-	    foreach($this->cc as $name => $mail) {
-		$message->addCc($mail, $name);
+	    foreach($this->cc as $r) {
+		$message->addTo($r->getEmail(), $r->getName());
 	    }
 	    
-	    foreach($this->bcc as $name => $mail) {
-		$message->addBcc($mail, $name);
+	    foreach($this->bcc as $r) {
+		$message->addTo($r->getEmail(), $r->getName());
 	    }
 	} else {
 	    // @todo implement here

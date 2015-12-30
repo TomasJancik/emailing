@@ -64,21 +64,21 @@ interface iMail {
     
     /**
      * Add recipients
-     * @param string|array $to
+     * @param array $to
      * @param bool $replace
      */
     public function addTo($to, $replace = false);
     
     /**
      * Add recipients in copy
-     * @param string|array $cc
+     * @param array $cc
      * @param bool $replace
      */
     public function addCc($cc, $replace = false);
     
     /**
      * Add recipients in hidden copy
-     * @param string|array $bcc
+     * @param array $bcc
      * @param bool $replace
      */
     public function addBcc($bcc, $replace = false);
