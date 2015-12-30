@@ -7,7 +7,7 @@ namespace Emailing;
  *
  * @author t.jancik
  */
-class MailRecipient {
+class MailRecipient implements iMailRecipient {
     
     public static $WAITING = 'WAITING';
     public static $SENT = 'SENT';
