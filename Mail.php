@@ -94,6 +94,8 @@ class Mail implements iMail {
 	    foreach($to as $name => $email) {
 		$this->to[$email] = new MailRecipient($email, $name);
 	    }
+	} elseif($to instanceof iMailRecipient) {
+	    $this->to[$to->getEmail()] = $to;
 	} else {
 	    Throw new \InvalidArgumentException(__METHOD__ . ' only accepts string or array as $to parameter.');
 	}
@@ -110,6 +112,8 @@ class Mail implements iMail {
 	    foreach($cc as $name => $email) {
 		$this->cc[$email] = new MailRecipient($email, $name);
 	    }
+	} elseif($cc instanceof iMailRecipient) {
+	    $this->cc[$cc->getEmail()] = $cc;
 	} else {
 	    Throw new \InvalidArgumentException(__METHOD__ . ' only accepts string or array as $to parameter.');
 	}
@@ -126,6 +130,8 @@ class Mail implements iMail {
 	    foreach($bcc as $name => $email) {
 		$this->bcc[$email] = new MailRecipient($email, $name);
 	    }
+	} elseif($bcc instanceof iMailRecipient) {
+	    $this->bcc[$bcc->getEmail()] = $bcc;
 	} else {
 	    Throw new \InvalidArgumentException(__METHOD__ . ' only accepts string or array as $to parameter.');
 	}
