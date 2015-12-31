@@ -184,6 +184,7 @@ class MySQLStorage implements iStorage {
     /**
      * Load requested mail from database
      * @param string $name
+     * @throws \LogicException
      */
     public function load($name) {
 	if(!is_object($this->mailer)) {
