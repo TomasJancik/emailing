@@ -21,6 +21,12 @@ interface iMail {
     public function getSubject();
     
     /**
+     * Get the From field
+     * @return string
+     */
+    public function getFrom();
+    
+    /**
      * Get the TO recipients
      * @return array
      */
@@ -61,6 +67,12 @@ interface iMail {
      * @param string $subject
      */
     public function setSubject($subject);
+    
+    /**
+     * Set the From field
+     * @param string $from
+     */
+    public function setFrom($from);
     
     /**
      * Add recipients

@@ -28,7 +28,7 @@ class MailRecipient implements iMailRecipient {
     /** @var string */
     private $date;
     
-    public function __construct($mail, $name = null) {
+    public function __construct($email, $name = null) {
 	$this->email = $email;
 	$this->name = $name;
 	$this->status = self::$WAITING;
@@ -47,6 +47,7 @@ class MailRecipient implements iMailRecipient {
 	$this->date = date('Y-m-d H:i:s');
     }
     public function setError($err){
+	$this->status = self::$ERROR;
 	$this->error = $err;
     }
     

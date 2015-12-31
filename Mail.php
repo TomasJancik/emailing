@@ -17,6 +17,9 @@ class Mail implements iMail {
     /** @var string */
     private $subject;
     
+    /** @var sting */
+    private $from;
+    
     /** @var array */
     private $to = array();
     
@@ -42,6 +45,10 @@ class Mail implements iMail {
     
     public function getSubject() {
 	return $this->subject;
+    }
+    
+    public function getFrom() {
+	return $this->from;
     }
     
     public function getTo() {
@@ -70,6 +77,10 @@ class Mail implements iMail {
     
     public function setSubject($subject) {
 	$this->subject = $subject;
+    }
+    
+    public function setFrom($from) {
+	$this->from = $from;
     }
     
     public function addTo($to, $replace = false) {
@@ -128,7 +139,71 @@ class Mail implements iMail {
 	$this->htmlBody = $htmlBody;
     }
     
-    public function send($batch) {
+    public function send($batch = null) {
+	$message = $this->prepareMessage();
+	
+	if(is_null($batch)) {
+	    // send to all recipients 
+	    foreach($this->to as $r) {
+		$message->addTo($r->getEmail(), $r->getName());
+		$r->setSent();
+	    }
+	    
+	    foreach($this->cc as $r) {
+		$message->addCc($r->getEmail(), $r->getName());
+		$r->setSent();
+	    }
+	    
+	    foreach($this->bcc as $r) {
+		$message->addBcc($r->getEmail(), $r->getName());
+		$r->setSent();
+	    }
+	    
+	    try {
+		$this->mailer->send($message);
+	    } catch(Nette\Mail\SendException $e) {
+		foreach($this->to as $r) {
+		    $r->setError($e->getMessage());
+		}
+
+		foreach($this->cc as $r) {
+		    $r->setError($e->getMessage());
+		}
+
+		foreach($this->bcc as $r) {
+		    $r->setError($e->getMessage());
+		}
+	    }
+	    
+	} else {
+	    $idx = 0;
+	    do {
+		$to = array_slice($this->to, $idx, $batch);
+		$idx += $batch;
+		
+		foreach($to as $r) {
+		    $message->addTo($r->getEmail(), $r->getName());
+		    $this->to[$r->getEmail()]->setSent();
+		}
+		
+		try {
+		    $this->mailer->send($message);
+		} catch (\Nette\Mail\SendException $e) {
+		    foreach($to as $r) {
+			$this->to[$r->getEmail()]->setError($e->getMessage());
+		    }
+		}
+	    } while($idx < count($this->to));
+	}
+	
+	var_dump($this->to);
+    }
+    
+    /**
+     * Prepare the Message object and return it
+     * @return \Nette\Mail\Message
+     */
+    protected function prepareMessage() {
 	if(empty($this->subject) && empty($this->textBody) && empty($this->htmlBody)) {
 	    throw new \LogicException('Subject and body cannot be empty');
 	}
@@ -149,21 +224,6 @@ class Mail implements iMail {
 	    $message->setBody($this->textBody);
 	}
 	
-	if(is_null($batch)) {
-	    // send to all recipients 
-	    foreach($this->to as $r) {
-		$message->addTo($r->getEmail(), $r->getName());
-	    }
-	    
-	    foreach($this->cc as $r) {
-		$message->addTo($r->getEmail(), $r->getName());
-	    }
-	    
-	    foreach($this->bcc as $r) {
-		$message->addTo($r->getEmail(), $r->getName());
-	    }
-	} else {
-	    // @todo implement here
-	}
+	return $message;
     }
 }
