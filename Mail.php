@@ -201,8 +201,6 @@ class Mail implements iMail {
 		}
 	    } while($idx < count($this->to));
 	}
-	
-	var_dump($this->to);
     }
     
     /**
