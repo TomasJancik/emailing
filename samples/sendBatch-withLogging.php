@@ -39,9 +39,10 @@ $smtp_options = array(
 $mailer = new Nette\Mail\SmtpMailer($smtp_options);
 $mail = new Emailing\Mail($mailer);
 
+/** optional - only for logging purposes */
 $logger = new FakeLogger();
-
 $mail->setLogger(array($logger, 'log'));
+/** minimum level to log */
 $mail->setLogLimit(LOG_INFO);
 
 $mail->setSubject('Sending in batch');
