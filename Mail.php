@@ -35,6 +35,12 @@ class Mail implements iMail {
     /** @var string */
     private $htmlBody;
     
+    /** @var callable */
+    protected $logger = false;
+    
+    /** @var type int */
+    protected $log_limit = LOG_ERR;
+    
     public function __construct(\Nette\Mail\IMailer $mailer) {
 	$this->mailer = $mailer;
     }
@@ -145,6 +151,37 @@ class Mail implements iMail {
 	$this->htmlBody = $htmlBody;
     }
     
+    public function setLogger(callable $logger) {
+	$this->logger = $logger;
+    }
+    
+    /**
+     * Set the minimum log level to be logged
+     * @param int $limit
+     * @throws InvalidArgumentException
+     */
+    public function setLogLimit($limit) {
+	if(is_int($limit)) {
+	    $this->log_limit = $limit;
+	} else {
+	    throw new \InvalidArgumentException(__METHOD__ . ' only accepts INT as an argument');
+	}
+	
+    }
+    
+    /**
+     * Log a message using the $logger callback
+     * @param int $level
+     * @param string $msg
+     */
+    protected function log($level, $msg) {
+	if(is_callable($this->logger)) {
+	    if($level <= $this->log_limit) {
+		call_user_func_array($this->logger, array($level, $msg));
+	    }
+	}
+    }
+    
     public function send($batch = null) {
 	$message = $this->prepareMessage();
 	
@@ -179,10 +216,15 @@ class Mail implements iMail {
 		foreach($this->bcc as $r) {
 		    $r->setError($e->getMessage());
 		}
+		
+		$this->log(LOG_ERR, $e->getMessage());
 	    }
 	    
 	} else {
 	    $idx = 0;
+	    
+	    $this->log(LOG_INFO, 'Sending email in batches by ' . $batch . ' recipients');
+	    
 	    do {
 		$to = array_slice($this->to, $idx, $batch);
 		$idx += $batch;
@@ -198,6 +240,8 @@ class Mail implements iMail {
 		    foreach($to as $r) {
 			$this->to[$r->getEmail()]->setError($e->getMessage());
 		    }
+		    
+		    $this->log(LOG_ERR, $e->getMessage());
 		}
 	    } while($idx < count($this->to));
 	}
