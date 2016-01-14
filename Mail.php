@@ -151,6 +151,14 @@ class Mail implements iMail {
 	$this->htmlBody = $htmlBody;
     }
     
+    /**
+     * Set the mailer
+     * @param \Nette\Mail\IMailer $mailer
+     */
+    public function setMailer(\Nette\Mail\IMailer $mailer) {
+        $this->mailer = $mailer;
+    }
+    
     public function setLogger(callable $logger) {
 	$this->logger = $logger;
     }
