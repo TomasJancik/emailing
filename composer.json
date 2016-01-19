@@ -2,5 +2,8 @@
     "name": "TomasJancik/emailing",
     "require": {
 	"nette/mail": "2.*"
+    },
+    "autoload": {
+        "classmap": ["/"]
     }
 }
