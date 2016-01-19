@@ -241,6 +241,9 @@ class MySQLStorage implements iStorage {
 	    $mail->$method($r);
 	}
         
+        $stm->free_result();
+        $stm->close();
+        
         return $mail;
     }
 }
