@@ -214,6 +214,7 @@ class MySQLStorage implements iStorage {
 	$stm->free_result();
 	$stm->close();
 	
+        
 	// load recipients
 	$stm = $this->db->prepare($recipients_query);
 	if(false == $stm) {
@@ -239,5 +240,7 @@ class MySQLStorage implements iStorage {
 	    
 	    $mail->$method($r);
 	}
+        
+        return $mail;
     }
 }
